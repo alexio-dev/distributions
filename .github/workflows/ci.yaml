@@ -20,19 +20,23 @@ jobs:
       image: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+
       - name: Fix sources.list for Debian 10
         if: contains(matrix.os, 'debian:10')
         run: |
           echo "deb http://archive.debian.org/debian buster main" > /etc/apt/sources.list
           apt-get -o Acquire::Check-Valid-Until=false -o Acquire::AllowInsecureRepositories=true update
+
       - name: Run Installation Script
         run: ./scripts/deb/setup_${{ matrix.version }}.x
+
       - name: Install Nodejs
         run: apt install nodejs -y
+
       - name: Validate Node Version
         run: |
           node -v
-          which node
+          command -v node
           NODE_VERSION=$(node -v | sed 's/v\([0-9]*\).*/\1/')
           if [[ "${NODE_VERSION}" != "${{ matrix.version }}" ]]; then
             echo "Node version is not ${{ matrix.version }}. It is $NODE_VERSION"
@@ -53,15 +57,19 @@ jobs:
         run: |
           dnf update -y
           dnf install git -y
+
       - uses: actions/checkout@v4
+
       - name: Run Installation Script
         run: ./scripts/rpm/setup_${{ matrix.version }}.x
+
       - name: Install Nodejs
         run: dnf install nodejs -y
+
       - name: Validate Node Version
         run: |
           node -v
-          which node
+          command -v node
           NODE_VERSION=$(node -v | sed 's/v\([0-9]*\).*/\1/')
           if [[ "${NODE_VERSION}" != "${{ matrix.version }}" ]]; then
             echo "Node version is not ${{ matrix.version }}. It is $NODE_VERSION"
@@ -82,15 +90,19 @@ jobs:
         run: |
           microdnf update -y
           microdnf install git -y
+
       - uses: actions/checkout@v4
+
       - name: Run Installation Script
         run: ./scripts/rpm/setup_${{ matrix.version }}.x
+
       - name: Install Nodejs
         run: microdnf install nodejs -y
+
       - name: Validate Node Version
         run: |
           node -v
-          which node
+          command -v node
           NODE_VERSION=$(node -v | sed 's/v\([0-9]*\).*/\1/')
           if [[ "${NODE_VERSION}" != "${{ matrix.version }}" ]]; then
             echo "Node version is not ${{ matrix.version }}. It is $NODE_VERSION"
