@@ -110,7 +110,11 @@ jobs:
           node -v
           command -v node
           NODE_VERSION=$(node -v | grep -oP '^v\K[0-9]+')
-          if [ "$NODE_VERSION" -ne "${{ matrix.version }}" ]; then
+          if [ -z "$NODE_VERSION" ] || ! [[ "$NODE_VERSION" =~ ^[0-9]+$ ]]; then
+            echo "::error::Failed to extract a valid Node.js version. NODE_VERSION='$NODE_VERSION'"
+            exit 1
+          fi
+          if [ "$NODE_VERSION" != "${{ matrix.version }}" ]; then
             echo "::error::Node version is not ${{ matrix.version }}. It is $NODE_VERSION"
             exit 1
           fi
